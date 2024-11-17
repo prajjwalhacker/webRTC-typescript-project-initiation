@@ -10,12 +10,12 @@ export interface User {
 export class UserManager {
     private users: User[];
     private queue: string[];
-    private rooms: roomManager[];
+    private roomManager: roomManager;
 
     constructor(){
         this.users = [];
         this.queue = [];
-        this.rooms = [];
+        this.roomManager = new roomManager();
     }
 
     addUser (name: string, socket: Socket) {
@@ -28,9 +28,27 @@ export class UserManager {
     }
     clearQueue () { 
         if (this.queue.length < 2) return;
-
         const user1 = this.users.find((item) => item.socket.id === this.queue.pop());
         const user2 = this.users.find((item) => item.socket.id === this.queue.pop());
-
+        if (!user1 || !user2) return;
+        this.roomManager.createRoom(user1, user2);
+        
+        this.initHandler(user1?.socket);
+        this.initHandler(user2?.socket);
+        this.clearQueue();
+        
     }
+    removeUser (user: User) {
+      this.users = this.users.filter((item) => item.socket.id !== user.socket.id);
+      this.queue = this.queue.filter((item) => item !== user.socket.id);
+    }
+    initHandler (socket: Socket) {
+        socket.on('offer', ({ sdp, roomId }: { sdp: string, roomId: string }) => {
+            this.roomManager.onOffer(sdp, roomId);
+        })
+        socket.on('answer',({ sdp, roomId }: { sdp: string, roomId: string }) => {
+            this.roomManager.onAnswer(sdp, roomId);
+        })
+    }
+
 }

@@ -26,6 +26,10 @@ app.get("/", (req: any, res: any) => {
 
 const users = new UserManager();
 
+
+
+console.log(users);
+
 io.on("connection", (socket: any) => {
   console.log(`New connection: ${socket.id}`);
 

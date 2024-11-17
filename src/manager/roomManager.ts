@@ -4,31 +4,38 @@ import { User } from "./UserManager";
 interface room {
     user1: User;
     user2: User;
-    roomId: number;
+    roomId: string;
 }
 
 
-let GLOBAL_ROOM_ID = 0;
+let GLOBAL_ROOM_ID = 1;
 
 export class roomManager {
-    private room: room[];
-    private roomId: number;
+    private room: Map<string, room>;
     constructor() {
-        this.room = [];
-        this.roomId = GLOBAL_ROOM_ID;
+        this.room = new Map<string, room>();
     }
-
+    onOffer(roomId: string, sdp: string) {
+       const user = this.room.get(roomId)?.user1;
+       user?.socket.emit('send-offer', { roomId,  sdp });
+    }
+    onAnswer(roomId: string, sdp: string) {
+        const user = this.room.get(roomId)?.user2;
+        user?.socket.emit('send-answer', { roomId, sdp });
+    }
     createRoom(user1: User, user2: User) {
-       this.generateRoomId();
-       this.room.push({
-        user1, 
-        user2, 
-        roomId: this.roomId
+       const roomId = this.generateRoomId();
+       this.room.set(roomId.toString(),{
+        user1,
+        user2,
+        roomId: roomId.toString()
+       })
+       user1.socket.emit('send-offer',{
+         roomId
        })
     }
-
     generateRoomId() {
-       this.roomId = this.roomId+1;
+       return GLOBAL_ROOM_ID++;
     }
 
 }
