@@ -27,11 +27,10 @@ app.get("/", (req: any, res: any) => {
 const users = new UserManager();
 
 
-
-console.log(users);
-
+ 
 io.on("connection", (socket: any) => {
   console.log(`New connection: ${socket.id}`);
+  users.addUser('randomUser',  socket.id);
 
   socket.on("message", (msg: any) => {
     console.log(`Message received: ${msg}`);

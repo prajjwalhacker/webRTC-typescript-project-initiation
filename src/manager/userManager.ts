@@ -24,6 +24,7 @@ export class UserManager {
             socket
          })
          this.queue.push(socket.id);
+         this.initHandler(socket);
          this.clearQueue();
     }
     clearQueue () { 
@@ -32,9 +33,6 @@ export class UserManager {
         const user2 = this.users.find((item) => item.socket.id === this.queue.pop());
         if (!user1 || !user2) return;
         this.roomManager.createRoom(user1, user2);
-        
-        this.initHandler(user1?.socket);
-        this.initHandler(user2?.socket);
         this.clearQueue();
         
     }
