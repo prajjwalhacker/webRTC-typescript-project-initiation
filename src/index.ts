@@ -15,7 +15,7 @@ app.use(cors());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
@@ -27,11 +27,12 @@ app.get("/", (req: any, res: any) => {
 const users = new UserManager();
 
 
+
  
 io.on("connection", (socket: any) => {
   console.log(`New connection: ${socket.id}`);
-  users.addUser('randomUser',  socket.id);
-
+  users.addUser('randomUser',  socket);
+  console.log(users);
   socket.on("message", (msg: any) => {
     console.log(`Message received: ${msg}`);
   });
@@ -46,3 +47,4 @@ io.on("connection", (socket: any) => {
 httpServer.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
+   

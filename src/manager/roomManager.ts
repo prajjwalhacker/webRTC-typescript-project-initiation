@@ -16,12 +16,12 @@ export class roomManager {
         this.room = new Map<string, room>();
     }
     onOffer(roomId: string, sdp: string) {
-       const user = this.room.get(roomId)?.user1;
-       user?.socket.emit('send-offer', { roomId,  sdp });
+       const user = this.room.get(roomId?.toString())?.user2;
+       user?.socket.emit('offer-with-sdp', { roomId,  sdp });
     }
     onAnswer(roomId: string, sdp: string) {
-        const user = this.room.get(roomId)?.user2;
-        user?.socket.emit('send-answer', { roomId, sdp });
+        const user = this.room.get(roomId?.toString())?.user1;
+        user?.socket.emit('answer-with-sdp', { roomId, sdp });
     }
     createRoom(user1: User, user2: User) {
        const roomId = this.generateRoomId();
