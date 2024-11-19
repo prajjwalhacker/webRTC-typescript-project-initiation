@@ -24,6 +24,7 @@ export class UserManager {
             socket
          })
          this.queue.push(socket.id);
+         socket.emit('lobby');
          this.initHandler(socket);
          this.clearQueue();
     }
@@ -58,8 +59,9 @@ export class UserManager {
     }
     removeRoom(socketId: string) {
         const userToPushInQueue = this.roomManager.removeRoom(socketId);
+
         this.queue.push(userToPushInQueue.socket.id);
-        userToPushInQueue.socket.emit('lobby');
+        userToPushInQueue.socket.emit('person-quit');
         this.clearQueue();
     }
 }
