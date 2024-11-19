@@ -56,11 +56,14 @@ export class UserManager {
             console.log(sdp, roomId, "sdp and answer");
             this.roomManager.onAnswer(roomId, sdp);
         })
+        socket.on("add-ice-candidate", ({candidate, roomId, type}) => {
+            this.roomManager.onIceCandidates(roomId, socket.id, candidate, type);
+        });
     }
     removeRoom(socketId: string) {
         const userToPushInQueue = this.roomManager.removeRoom(socketId);
-
-        this.queue.push(userToPushInQueue.socket.id);
+        if (!userToPushInQueue?.socket) return;
+        this.queue.push(userToPushInQueue?.socket?.id);
         userToPushInQueue.socket.emit('person-quit');
         this.clearQueue();
     }

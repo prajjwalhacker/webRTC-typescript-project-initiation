@@ -30,6 +30,7 @@ export class roomManager {
         user2,
         roomId: roomId.toString()
        })
+       console.log(user1, "user1");
        user1.socket.emit('send-offer',{
          roomId
        })
@@ -53,6 +54,14 @@ export class roomManager {
         this.room.delete(requiredKey);
 
         return userToPushInQueue; 
+    }
+    onIceCandidates(roomId: string, senderSocketid: string, candidate: any, type: "sender" | "receiver") {
+        const roomElemet = this.room.get(roomId);
+        if (!roomElemet) {
+            return;
+        }
+        const receivingUser = roomElemet.user1.socket.id === senderSocketid ? roomElemet.user2: roomElemet.user1;
+        receivingUser.socket.emit("add-ice-candidate", ({candidate, type}));
     }
 
 }
