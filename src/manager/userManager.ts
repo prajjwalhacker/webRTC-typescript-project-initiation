@@ -24,16 +24,13 @@ export class UserManager {
             socket
          })
          this.queue.push(socket.id);
-         console.log("this.users");
-         console.log(this.queue);
          this.initHandler(socket);
          this.clearQueue();
     }
     clearQueue () { 
+
         if (this.queue.length < 2) return;
 
-        console.log(this.users);
-        console.log(this.queue);
         const id1 = this.queue.pop();
         const id2 = this.queue.pop();
 
@@ -45,9 +42,9 @@ export class UserManager {
         this.clearQueue();
         
     }
-    removeUser (user: User) {
-      this.users = (this.users || []).filter((item) => item.socket.id !== user.socket.id);
-      this.queue = (this.queue || []).filter((item) => item !== user.socket.id);
+    removeUser (id: string) {
+      this.users = (this.users || []).filter((item) => item?.socket?.id !== id);
+      this.queue = (this.queue || []).filter((item) => item !== id);
     }  
     initHandler (socket: Socket) {
         socket.on('offer', ({ sdp, roomId }: { sdp: string, roomId: string }) => {
@@ -59,5 +56,10 @@ export class UserManager {
             this.roomManager.onAnswer(roomId, sdp);
         })
     }
-
+    removeRoom(socketId: string) {
+        const userToPushInQueue = this.roomManager.removeRoom(socketId);
+        this.queue.push(userToPushInQueue.socket.id);
+        userToPushInQueue.socket.emit('lobby');
+        this.clearQueue();
+    }
 }

@@ -37,5 +37,22 @@ export class roomManager {
     generateRoomId() {
        return GLOBAL_ROOM_ID++;
     }
+    removeRoom(socketId: string) {
+        let requiredKey = '';
+        let userToPushInQueue: any = {}; 
+        for (const [key, value] of this.room.entries()) {
+           if (value.user1.socket.id === socketId) {
+              requiredKey = key;
+              userToPushInQueue = value.user2;
+           }
+           if (value.user2.socket.id === socketId) {
+              requiredKey = key;
+              userToPushInQueue.user2;
+           }
+        }
+        this.room.delete(requiredKey);
+
+        return userToPushInQueue; 
+    }
 
 }
